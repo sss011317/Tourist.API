@@ -1,0 +1,19 @@
+init 初始化
+add 新增
+fix 規格正確，程式錯誤
+adjust 規格錯誤，程式正確
+review 重構(release)
+del 刪除(release)
+sync 同步(插件加入，公司程式合併)
+tmp 暫存(針對本地端數據庫)版控紀錄
+merge 合併(手動合併才要加header)
+
+
+commit 輸入樣本
+
+Header : Subject(less than 50 words)
+1.Body-Content1
+2.Body-Content2
+
+
+#20201225001 (Footer-Issue Id)
