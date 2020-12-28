@@ -3,14 +3,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Tourist.API.Migrations
 {
-    public partial class UpdateTouristRouteSchema : Migration
+    public partial class Update : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-          name: "DepartureCity",
-          table: "TouristRoutes",
-          nullable: true);
+                name: "DepartureCity",
+                table: "TouristRoutes",
+                nullable: true);
 
             migrationBuilder.AddColumn<double>(
                 name: "Rating",
@@ -136,7 +136,7 @@ namespace Tourist.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "DepartueCity",
+                name: "DepartureCity",
                 table: "TouristRoutes");
 
             migrationBuilder.DropColumn(
@@ -150,13 +150,6 @@ namespace Tourist.API.Migrations
             migrationBuilder.DropColumn(
                 name: "TripType",
                 table: "TouristRoutes");
-
-            migrationBuilder.UpdateData(
-                table: "TouristRoutes",
-                keyColumn: "Id",
-                keyValue: new Guid("1953b1f1-72ef-49fa-b63f-6fd228dcbe5a"),
-                column: "CreateTime",
-                value: new DateTime(2020, 12, 26, 10, 55, 38, 126, DateTimeKind.Utc).AddTicks(3925));
         }
     }
 }

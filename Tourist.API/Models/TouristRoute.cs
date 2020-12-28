@@ -40,7 +40,7 @@ namespace Tourist.API.Models
         public string Notes { get; set; }
 
         public ICollection<TouristRoutePicture> TouristRoutePictures { get; set; }
-            = new List<TouristRoutePicture>();
+    	= new List<TouristRoutePicture>();
         //給TouristRoutePictures初始化數值，避免一些未知的錯誤
 
 

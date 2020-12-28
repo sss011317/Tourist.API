@@ -10,7 +10,7 @@ using Tourist.API.Database;
 namespace Tourist.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201226105235_InitalMigration")]
+    [Migration("20201228074150_InitalMigration")]
     partial class InitalMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,16 +64,6 @@ namespace Tourist.API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("TouristRoutes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = new Guid("1953b1f1-72ef-49fa-b63f-6fd228dcbe5a"),
-                            CreateTime = new DateTime(2020, 12, 26, 10, 52, 34, 921, DateTimeKind.Utc).AddTicks(2197),
-                            Description = "Description",
-                            OriginalPrice = 0m,
-                            Title = "Test"
-                        });
                 });
 
             modelBuilder.Entity("Tourist.API.Models.TouristRoutePicture", b =>
@@ -95,14 +85,6 @@ namespace Tourist.API.Migrations
                     b.HasIndex("TouristRouteId");
 
                     b.ToTable("TouristRoutePictures");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 101,
-                            TouristRouteId = new Guid("1953b1f1-72ef-49fa-b63f-6fd228dcbe5a"),
-                            Url = "youtube.com"
-                        });
                 });
 
             modelBuilder.Entity("Tourist.API.Models.TouristRoutePicture", b =>

@@ -12,5 +12,10 @@ namespace Tourist.API.Services
         IEnumerable<TouristRoute> GetTouristRoutes();
         //返回一個的touristRoute
         TouristRoute GetTouristRoute(Guid touristRouteId);
+
+        bool TouristRouteExists(Guid touristRouteId);
+        IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId);
+
+        TouristRoutePicture GetPicture(int pictureId);
     }
 }

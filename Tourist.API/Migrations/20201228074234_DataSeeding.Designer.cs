@@ -10,8 +10,8 @@ using Tourist.API.Database;
 namespace Tourist.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20201226110241_UpdateTouristRouteSchema")]
-    partial class UpdateTouristRouteSchema
+    [Migration("20201228074234_DataSeeding")]
+    partial class DataSeeding
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -29,9 +29,6 @@ namespace Tourist.API.Migrations
 
                     b.Property<DateTime>("CreateTime")
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("DepartueCity")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("DepartureTime")
                         .HasColumnType("datetime2");
@@ -56,19 +53,10 @@ namespace Tourist.API.Migrations
                     b.Property<decimal>("OriginalPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<double?>("Rating")
-                        .HasColumnType("float");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
-
-                    b.Property<int?>("TravelDays")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("TripType")
-                        .HasColumnType("int");
 
                     b.Property<DateTime?>("UpdateTime")
                         .HasColumnType("datetime2");
@@ -81,7 +69,7 @@ namespace Tourist.API.Migrations
                         new
                         {
                             Id = new Guid("1953b1f1-72ef-49fa-b63f-6fd228dcbe5a"),
-                            CreateTime = new DateTime(2020, 12, 26, 11, 2, 41, 268, DateTimeKind.Utc).AddTicks(2424),
+                            CreateTime = new DateTime(2020, 12, 28, 7, 42, 34, 245, DateTimeKind.Utc).AddTicks(1748),
                             Description = "Description",
                             OriginalPrice = 0m,
                             Title = "Test"
@@ -107,14 +95,6 @@ namespace Tourist.API.Migrations
                     b.HasIndex("TouristRouteId");
 
                     b.ToTable("TouristRoutePictures");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 101,
-                            TouristRouteId = new Guid("1953b1f1-72ef-49fa-b63f-6fd228dcbe5a"),
-                            Url = "youtube.com"
-                        });
                 });
 
             modelBuilder.Entity("Tourist.API.Models.TouristRoutePicture", b =>
