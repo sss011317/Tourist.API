@@ -76,6 +76,10 @@ namespace Tourist.API.Services
         {
             return _context.TouristRoutePictures.Where(p => p.Id ==pictureId).FirstOrDefault();
         }
+        public IEnumerable<TouristRoute> GetTouristRoutesByIDList(IEnumerable<Guid> ids)
+        {
+            return _context.TouristRoutes.Where(t => ids.Contains(t.Id)).ToList();
+        }
         public void AddTouristRoute(TouristRoute touristRoute)
         {
             if (touristRoute == null)
@@ -97,6 +101,18 @@ namespace Tourist.API.Services
             }
             touristRoutePicture.TouristRouteId = touristRouteId;
             _context.TouristRoutePictures.Add(touristRoutePicture);
+        }
+        public void DeleteTouristRoute(TouristRoute touristRoute)
+        {
+            _context.TouristRoutes.Remove(touristRoute);
+        }
+        public void DeleteTouristRoutes(IEnumerable<TouristRoute> touristRoutes)
+        {
+            _context.TouristRoutes.RemoveRange(touristRoutes);
+        }
+        public void DeleteTouristRoutePicture(TouristRoutePicture touristRoutePicture)
+        {
+            _context.TouristRoutePictures.Remove(touristRoutePicture);
         }
         public bool Save()
         {

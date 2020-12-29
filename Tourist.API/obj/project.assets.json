@@ -5189,19 +5189,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\user-50\\.nuget\\packages\\": {}
+    "C:\\Users\\test\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
+      "projectUniqueName": "C:\\Users\\test\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
       "projectName": "Tourist.API",
-      "projectPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
-      "packagesPath": "C:\\Users\\user-50\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\obj\\",
+      "projectPath": "C:\\Users\\test\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
+      "packagesPath": "C:\\Users\\test\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\test\\source\\repos\\Tourist.API\\Tourist.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
-        "C:\\Users\\user-50\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\test\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

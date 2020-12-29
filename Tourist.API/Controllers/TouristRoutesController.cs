@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using Tourist.API.ResourceParameters;
 using Tourist.API.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Tourist.API.Helper;
 
 namespace Tourist.API.Controllers
 {
@@ -105,7 +106,7 @@ namespace Tourist.API.Controllers
 
         [HttpPut("{touristRouteId}")]
         public IActionResult UPdateTouristRoute(
-            [FromRoute]Guid touristRouteId,
+            [FromRoute] Guid touristRouteId,
             [FromBody] TouristRouteForUpdateDto touristRouteForUpdateDto
             )
         {
@@ -139,7 +140,7 @@ namespace Tourist.API.Controllers
 
             var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
             var touristRouteToPacth = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
-            patchDocument.ApplyTo(touristRouteToPacth,ModelState);
+            patchDocument.ApplyTo(touristRouteToPacth, ModelState);
             //ModelState是通過JSON PATCH的ApplyTo函數與DTO函數進行綁定，至於資料的驗證規則則是由DTO的data annotation來定義
             if (!TryValidateModel(touristRouteToPacth))
             {
@@ -149,6 +150,33 @@ namespace Tourist.API.Controllers
             _mapper.Map(touristRouteToPacth, touristRouteFromRepo);
             _touristRouteRepository.Save();
 
+            return NoContent();
+        }
+        [HttpDelete("{touristRouteId}")]
+        public IActionResult DeleteTouristRoute([FromRoute] Guid touristRouteId)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("旅遊訊息找不到");
+            }
+            var touristRoute = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            _touristRouteRepository.DeleteTouristRoute(touristRoute);
+            _touristRouteRepository.Save();
+            return NoContent();
+        }
+        [HttpDelete("({touristIDs})")]
+        public IActionResult DeleteByIDs(
+            //[ModelBinder(binderType:typeof(ArrayModelBinder))] 解析并匹配 GUID
+            [ModelBinder(binderType:typeof(ArrayModelBinder))][FromRoute]IEnumerable<Guid> touristIDs)
+        {
+            if(touristIDs == null)
+            {
+                return BadRequest();
+            }
+
+            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutesByIDList(touristIDs);
+            _touristRouteRepository.DeleteTouristRoutes(touristRoutesFromRepo);
+            _touristRouteRepository.Save();
             return NoContent();
         }
     }

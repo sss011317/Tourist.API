@@ -81,7 +81,21 @@ namespace Tourist.API.Controllers
                 },
                 pictureToReturn
                 );
-
+        }
+        [HttpDelete("{pictureId}")]
+        public IActionResult DeletePicture(
+            [FromRoute] Guid touristRouteId,
+            [FromRoute] int pictureId
+            )
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("旅遊路線不存在");
+            }
+            var touristRoutePicture = _touristRouteRepository.GetPicture(pictureId);
+            _touristRouteRepository.DeleteTouristRoutePicture(touristRoutePicture);
+            _touristRouteRepository.Save();
+            return NoContent();
         }
     }
 }
