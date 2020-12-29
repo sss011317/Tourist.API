@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Mvc.Formatters;
 using AutoMapper;
+using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json.Serialization;
 
 namespace Tourist.API
 {
@@ -37,7 +39,34 @@ namespace Tourist.API
                 //setupAction.OutputFormatters.Add( 
                 //    new XmlDataContractSerializerOutputFormatter()
                 //    );
-            }).AddXmlDataContractSerializerFormatters(); 
+            })
+            .AddNewtonsoftJson(setupAction =>
+            {
+                //將json patch框架安裝進系統
+                //需要配置的就是json序列化設置
+                setupAction.SerializerSettings.ContractResolver =
+                new CamelCasePropertyNamesContractResolver();
+            })
+            .AddXmlDataContractSerializerFormatters()
+            .ConfigureApiBehaviorOptions(setupAction=> //使return 400的錯誤更改成422(資料驗證失敗 422 unprocessable entity)
+            {
+                setupAction.InvalidModelStateResponseFactory = context =>
+                {
+                    var problemDetail = new ValidationProblemDetails(context.ModelState) 
+                    {
+                        Type="無所謂",
+                        Title="資料驗證失敗",
+                        Status = StatusCodes.Status422UnprocessableEntity,
+                        Detail="請看詳細內容",
+                        Instance = context.HttpContext.Request.Path
+                    };
+                    problemDetail.Extensions.Add("traceId", context.HttpContext.TraceIdentifier);
+                    return new UnprocessableEntityObjectResult(problemDetail) 
+                    {
+                        ContentTypes = { "application/problem+json"}
+                    };
+                };
+            }); //非法模型響應工廠，簡單來說就是驗證資料是否非法的一個過程
 
             services.AddTransient<ITouristRouteRepository,TouristRouteRepository>();
             //services.AddTransient  每一次發起請求，創建一個全新的數據倉庫，請求結束會註銷該倉庫

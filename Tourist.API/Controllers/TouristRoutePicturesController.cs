@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tourist.API.Dtos;
+using Tourist.API.Models;
 using Tourist.API.Services;
 
 namespace Tourist.API.Controllers
@@ -41,7 +42,7 @@ namespace Tourist.API.Controllers
             }
             return Ok(_mapper.Map<IEnumerable<TouristRoutePictureDto>>(pictureFromRepo));
         }
-        [HttpGet("{pictureId}")]
+        [HttpGet("{pictureId}",Name = "GetPicture")]
         //實際上在設計RESTful API 處理向這種有父子關係或嵌套關係的資源時，我們首先要取得父資源，在父資源的基礎上再獲得子資源
         //如果連父資源都不存在，最好不要暴露子資源
         public IActionResult GetPicture(Guid touristRouteId, int pictureId) 
@@ -57,6 +58,30 @@ namespace Tourist.API.Controllers
                 return NotFound("相片不存在");
             }
             return Ok(_mapper.Map<TouristRoutePictureDto>(pictureFromRepo));
+        }
+        [HttpPost]
+        public IActionResult CreatTouristRoutePicture(
+            [FromRoute]Guid touristRouteId,
+            [FromBody] TouristRoutePictureForCreationDto touristRoutePictureForCreationDto)
+        {
+            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            {
+                return NotFound("旅遊路線不存在");
+            }
+            var pictureModel = _mapper.Map<TouristRoutePicture>(touristRoutePictureForCreationDto);
+            _touristRouteRepository.AddTouristRoutePicture(touristRouteId,pictureModel);
+            _touristRouteRepository.Save();
+            var pictureToReturn = _mapper.Map<TouristRoutePictureDto>(pictureModel);
+            return CreatedAtRoute(
+                "GetPicture",
+                new 
+                { 
+                    touristRouteId = pictureModel.TouristRouteId,
+                    pictureId = pictureModel.Id
+                },
+                pictureToReturn
+                );
+
         }
     }
 }
