@@ -3,21 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tourist.API.Models;
-
 namespace Tourist.API.Services
 {
     public interface ITouristRouteRepository
     {
         //返回一組的touristRoute
-        IEnumerable<TouristRoute> GetTouristRoutes(string keyword,string ratingOperator,int? ratingValue);
+        Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(string keyword,string ratingOperator,int? ratingValue);
         //返回一個的touristRoute
-        TouristRoute GetTouristRoute(Guid touristRouteId);
+        Task<TouristRoute> GetTouristRouteAsync(Guid touristRouteId);
 
-        bool TouristRouteExists(Guid touristRouteId);
-        IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId);
-        IEnumerable<TouristRoute> GetTouristRoutesByIDList(IEnumerable<Guid> ids);
+        Task<bool> TouristRouteExistsAsync(Guid touristRouteId);
+        Task<IEnumerable<TouristRoutePicture>> GetPicturesByTouristRouteIdAsync(Guid touristRouteId);
+        Task<IEnumerable<TouristRoute>> GetTouristRoutesByIDListAsync(IEnumerable<Guid> ids);
 
-        TouristRoutePicture GetPicture(int pictureId);
+        Task<TouristRoutePicture> GetPictureAsync(int pictureId);
 
         void AddTouristRoute(TouristRoute touristRoute);
         void AddTouristRoutePicture(Guid touristRouteId, TouristRoutePicture touristRoutePicture);
@@ -25,7 +24,9 @@ namespace Tourist.API.Services
         void DeleteTouristRoutes(IEnumerable<TouristRoute> touristRoutes);
 
         void DeleteTouristRoutePicture(TouristRoutePicture touristRoutePicture);
-        
-        bool Save();
+
+        Task<ShoppingCart> GetShoppingCartByUserId(string userId);
+        Task CreateShoppingCart(ShoppingCart shoppingCart);
+        Task<bool> SaveAsync();
     }
 }

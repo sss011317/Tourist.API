@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Tourist.API.Database;
 
 namespace Tourist.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201230073514_IdentityMigration2")]
+    partial class IdentityMigration2
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -49,7 +51,7 @@ namespace Tourist.API.Migrations
                         new
                         {
                             Id = "308660dc-ae51-480f-824d-7dca6714c3e2",
-                            ConcurrencyStamp = "6885231a-0f35-4bd1-9b01-c0626d10dbd6",
+                            ConcurrencyStamp = "1351468b-08ed-4b2a-aeaa-bc335a668145",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         });
@@ -258,65 +260,19 @@ namespace Tourist.API.Migrations
                         {
                             Id = "90184155-dee0-40c9-bb1e-b5ed07afc04e",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d989d071-9a8d-479a-b681-b97d1b0a0cc5",
+                            ConcurrencyStamp = "d724e7de-7307-4294-8343-50e8391603af",
                             Email = "admin@tourist.com",
                             EmailConfirmed = true,
                             LockoutEnabled = false,
                             NormalizedEmail = "ADMIN@TOURIST.COM",
                             NormalizedUserName = "ADMIN@TOURIST.COM",
-                            PasswordHash = "AQAAAAEAACcQAAAAEBT+HDu3XzeklXd6xsZSrFF1Jk/0L/ehFUPor/K0fnLLX46/OIo5OGdDiIz/GYisTg==",
+                            PasswordHash = "AQAAAAEAACcQAAAAELTebG/9JLN9UJz+vKc54WlIj+sBMovVz12pf6sXAgnSRh7MdgVmI1Q6NMNOT28zPw==",
                             PhoneNumber = "123456789",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "23b406ff-3f51-49c6-9342-1c6088bff9e9",
+                            SecurityStamp = "98891197-4a36-411c-bf4d-0b82cbe0c854",
                             TwoFactorEnabled = false,
                             UserName = "admin@tourist.com"
                         });
-                });
-
-            modelBuilder.Entity("Tourist.API.Models.LineItem", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<double?>("DiscountPresent")
-                        .HasColumnType("float");
-
-                    b.Property<decimal>("OriginalPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.Property<Guid?>("ShoppingCartId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("TouristRouteId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ShoppingCartId");
-
-                    b.HasIndex("TouristRouteId");
-
-                    b.ToTable("LineItems");
-                });
-
-            modelBuilder.Entity("Tourist.API.Models.ShoppingCart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
-                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("Tourist.API.Models.TouristRoute", b =>
@@ -1115,26 +1071,6 @@ namespace Tourist.API.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Tourist.API.Models.LineItem", b =>
-                {
-                    b.HasOne("Tourist.API.Models.ShoppingCart", null)
-                        .WithMany("ShoppingCartItems")
-                        .HasForeignKey("ShoppingCartId");
-
-                    b.HasOne("Tourist.API.Models.TouristRoute", "touristRoute")
-                        .WithMany()
-                        .HasForeignKey("TouristRouteId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Tourist.API.Models.ShoppingCart", b =>
-                {
-                    b.HasOne("Tourist.API.Models.ApplicationUser", "User")
-                        .WithOne("shoppingCart")
-                        .HasForeignKey("Tourist.API.Models.ShoppingCart", "UserId");
                 });
 
             modelBuilder.Entity("Tourist.API.Models.TouristRoutePicture", b =>

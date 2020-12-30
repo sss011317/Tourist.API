@@ -15,6 +15,11 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Serialization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Tourist.API.Models;
 
 namespace Tourist.API
 {
@@ -29,6 +34,25 @@ namespace Tourist.API
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<AppDbContext>();
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options => {
+                    var secretByte = Encoding.UTF8.GetBytes(Configuration["Authentication:SecretKey"]);
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        //驗證token的發布者 只有我們後端發布的token才會被接受
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration["Authentication:Issuer"],
+                        //驗證token的持有者
+                        ValidateAudience = true,
+                        ValidAudience = Configuration["Authentication:Audience"],
+                        //驗證token是否過期
+                        ValidateLifetime = true,
+                        //將配置文件的私鑰傳進來，並進行加密
+                        IssuerSigningKey = new SymmetricSecurityKey(secretByte)
+                    };
+                });
             //幫助我們在創建API的時候向IOC的容器中添加一個框架服務
             //我們需要在addControllers參數的來對控制器進行配置，從而啟動對media Type的處理
             services.AddControllers(setupAction => {
@@ -86,8 +110,12 @@ namespace Tourist.API
             {
                 app.UseDeveloperExceptionPage();
             }
-
+            //UseRouting你在哪
             app.UseRouting();
+            //UseAuthentication你是誰
+            app.UseAuthentication();
+            //UseAuthorization你的權限是什麼
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

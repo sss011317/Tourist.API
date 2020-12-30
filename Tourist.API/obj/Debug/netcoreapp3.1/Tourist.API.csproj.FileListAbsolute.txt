@@ -120,3 +120,15 @@ C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\AutoM
 C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.JsonPatch.dll
 C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Mvc.NewtonsoftJson.dll
 C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Newtonsoft.Json.Bson.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Logging.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Tokens.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Core.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Stores.dll

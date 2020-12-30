@@ -11,6 +11,7 @@ using Tourist.API.ResourceParameters;
 using Tourist.API.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Tourist.API.Helper;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Tourist.API.Controllers
 {
@@ -18,7 +19,7 @@ namespace Tourist.API.Controllers
     [ApiController]
     public class TouristRoutesController : ControllerBase
     {
-        private ITouristRouteRepository _touristRouteRepository;
+        private readonly ITouristRouteRepository _touristRouteRepository;
         //透過構建函數注入數據倉庫服務
         private readonly IMapper _mapper;
         public TouristRoutesController(
@@ -33,13 +34,13 @@ namespace Tourist.API.Controllers
         }
         // api/touristRoutes?keyword=傳入的參數
         [HttpGet, HttpHead]
-        public IActionResult GetTouristRoutes(
+        public async Task<IActionResult> GetTouristRoutes(
             [FromQuery] TouristRouteResourceParamaters paramaters
             //[FromQuery] string keyword,
             //string rating //小於lessThan,大於largerThan,等於 equalTo lessThan3, largerThan2,equalTo5
             ) // FromQuery(負責接收YRL的參數) vs FromBody(負責接收請求主體)
         {
-            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutes(paramaters.Keyword, paramaters.RatingOperator, paramaters.RatingValue);
+            var touristRoutesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(paramaters.Keyword, paramaters.RatingOperator, paramaters.RatingValue);
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Count() <= 0)
             {
                 return NotFound("沒有旅遊路線");
@@ -60,9 +61,9 @@ namespace Tourist.API.Controllers
         //另外需要注意touristRouteId可能會被輸入各種不同類型，不僅僅限於GUID，所以為了避免奇異，可在路由中加入類型的匹配 ":Guid"
         [HttpGet("{touristRouteId:Guid}", Name = "GetTouristRouteById")]
         [HttpHead]
-        public IActionResult GetTouristRouteById(Guid touristRouteId)
+        public async Task<IActionResult> GetTouristRouteById(Guid touristRouteId)
         {
-            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            var touristRouteFromRepo = await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
             if (touristRouteFromRepo == null)
             {
                 return NotFound($"沒有旅遊路線{touristRouteId}");
@@ -89,13 +90,16 @@ namespace Tourist.API.Controllers
             return Ok(touristRotueDto);
         }
         [HttpPost]
+        //我們再用Identity框架的多角色驗證的默認中間件並不是JWT TOKEN，所以必須使用指定Bearer
+        [Authorize(AuthenticationSchemes ="Bearer")]
+        [Authorize(Roles ="Admin")]
         //DTO是一種複雜的對象，而ASP.net自帶反序列化的功能，所以會將請求的主體內容解析，並且加載進入參數touristRouteForCreationDto中
         //接下來就可以使用此參數，並用此參數映射進入touristRoute的模型，最後通過數據倉庫來添加數據寫入資料庫
-        public IActionResult CreatTouristRote([FromBody] TouristRouteForCreationDto touristRouteForCreationDto)
+        public async Task<IActionResult> CreatTouristRoute([FromBody] TouristRouteForCreationDto touristRouteForCreationDto)
         {
             var touristRouteModel = _mapper.Map<TouristRoute>(touristRouteForCreationDto);
             _touristRouteRepository.AddTouristRoute(touristRouteModel);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
             var touristRouteToReturn = _mapper.Map<TouristRouteDto>(touristRouteModel);
             return CreatedAtRoute(
                 "GetTouristRouteById",
@@ -105,12 +109,14 @@ namespace Tourist.API.Controllers
         }
 
         [HttpPut("{touristRouteId}")]
-        public IActionResult UPdateTouristRoute(
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UPdateTouristRoute(
             [FromRoute] Guid touristRouteId,
             [FromBody] TouristRouteForUpdateDto touristRouteForUpdateDto
             )
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("旅遊訊息找不到");
             }
@@ -118,27 +124,29 @@ namespace Tourist.API.Controllers
             //在entityFrameWork中，touristRouteFromRepo是根據上下文對象context追中的
             //當我們在執行_mapper.Map這句程式碼時，資料模型的數據其實已經被修改了，而這個時候資料模型的追蹤狀態也就相應發生了變化
             //模型的追蹤狀態是由entity上下文關係對象context自我管理的，當我們使用資料庫保存時模型的追蹤狀態就會隨著context的保存寫入資料庫
-            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            var touristRouteFromRepo =await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
             //1.我們必須把touristRouteFromRepo所有的資料都提取出來，然後映射為DTO
             //2.更新DTO的資料
             //3.把更新後的DTO所有的資料再映射回到資料模型
             _mapper.Map(touristRouteForUpdateDto, touristRouteFromRepo);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
             //對於更新的響應，可以回傳200並在響應主體中包含更新後的數據資源，或者回傳204(No Content)返回一個完全不包含任何數據的響應
             return NoContent();
         }
         [HttpPatch("{touristRouteId}")]
-        public IActionResult PartiallyUpdateTouristRoute(
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> PartiallyUpdateTouristRoute(
             [FromRoute] Guid touristRouteId,
             [FromBody] JsonPatchDocument<TouristRouteForUpdateDto> patchDocument
             )
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("旅遊訊息找不到");
             }
 
-            var touristRouteFromRepo = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            var touristRouteFromRepo =await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
             var touristRouteToPacth = _mapper.Map<TouristRouteForUpdateDto>(touristRouteFromRepo);
             patchDocument.ApplyTo(touristRouteToPacth, ModelState);
             //ModelState是通過JSON PATCH的ApplyTo函數與DTO函數進行綁定，至於資料的驗證規則則是由DTO的data annotation來定義
@@ -148,25 +156,29 @@ namespace Tourist.API.Controllers
             }
             //輸入數據touristRouteToPacth，輸出數據touristRouteFromRepo
             _mapper.Map(touristRouteToPacth, touristRouteFromRepo);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
 
             return NoContent();
         }
         [HttpDelete("{touristRouteId}")]
-        public IActionResult DeleteTouristRoute([FromRoute] Guid touristRouteId)
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteTouristRoute([FromRoute] Guid touristRouteId)
         {
-            if (!_touristRouteRepository.TouristRouteExists(touristRouteId))
+            if (!(await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
             {
                 return NotFound("旅遊訊息找不到");
             }
-            var touristRoute = _touristRouteRepository.GetTouristRoute(touristRouteId);
+            var touristRoute =await _touristRouteRepository.GetTouristRouteAsync(touristRouteId);
             _touristRouteRepository.DeleteTouristRoute(touristRoute);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
             return NoContent();
         }
         [HttpDelete("({touristIDs})")]
-        public IActionResult DeleteByIDs(
-            //[ModelBinder(binderType:typeof(ArrayModelBinder))] 解析并匹配 GUID
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteByIDs(
+            //[ModelBinder(binderType:typeof(ArrayModelBinder))] 解析并匹配 GUID (將route的數值轉換成GUID的類型)
             [ModelBinder(binderType:typeof(ArrayModelBinder))][FromRoute]IEnumerable<Guid> touristIDs)
         {
             if(touristIDs == null)
@@ -174,9 +186,9 @@ namespace Tourist.API.Controllers
                 return BadRequest();
             }
 
-            var touristRoutesFromRepo = _touristRouteRepository.GetTouristRoutesByIDList(touristIDs);
+            var touristRoutesFromRepo = await _touristRouteRepository.GetTouristRoutesByIDListAsync(touristIDs);
             _touristRouteRepository.DeleteTouristRoutes(touristRoutesFromRepo);
-            _touristRouteRepository.Save();
+            await _touristRouteRepository.SaveAsync();
             return NoContent();
         }
     }

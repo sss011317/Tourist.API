@@ -17,12 +17,12 @@ namespace Tourist.API.Services
             _context = context;
         }
 
-        public TouristRoute GetTouristRoute(Guid touristRouteId)
+        public async Task<TouristRoute> GetTouristRouteAsync(Guid touristRouteId)
         {
-            return _context.TouristRoutes.Include(t => t.TouristRoutePictures).FirstOrDefault(n => n.Id == touristRouteId);
+            return await _context.TouristRoutes.Include(t => t.TouristRoutePictures).FirstOrDefaultAsync(n => n.Id == touristRouteId);
         }
 
-        public IEnumerable<TouristRoute> GetTouristRoutes(
+        public async Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(
             string keyword, 
             string ratingOperator, 
             int? ratingValue)
@@ -58,27 +58,27 @@ namespace Tourist.API.Services
             //join函數為不通過外界而是手動表連接的屬性
             //通過上述兩種方法可以進行立即加載(Eager Load)
             //另外entityFramework也提供另一種加載方式延遲加載(Lazy Load)，也就是不用join或include進行表連接
-            return result.ToList();
+            return await result.ToArrayAsync();
             //ToList為IQueryable內建函數，通過調用此函數，就會執行資料庫的訪問，而查詢出來的數據類型則不是IQueryable而是<TouristRoute>類型
         }
 
-        public bool TouristRouteExists(Guid touristRouteId)
+        public async Task<bool> TouristRouteExistsAsync(Guid touristRouteId)
         {
             //只要輸入的ID能有任何返回的數據，則這個ANY就返回true
 
-            return _context.TouristRoutes.Any(t => t.Id == touristRouteId);
+            return await _context.TouristRoutes.AnyAsync(t => t.Id == touristRouteId);
         }
-        public IEnumerable<TouristRoutePicture> GetPicturesByTouristRouteId(Guid touristRouteId)
+        public async Task<IEnumerable<TouristRoutePicture>> GetPicturesByTouristRouteIdAsync(Guid touristRouteId)
         {
-            return _context.TouristRoutePictures.Where(p => p.TouristRouteId == touristRouteId).ToList();
+            return await _context.TouristRoutePictures.Where(p => p.TouristRouteId == touristRouteId).ToArrayAsync();
         }
-        public TouristRoutePicture GetPicture(int pictureId)
+        public async Task<TouristRoutePicture> GetPictureAsync(int pictureId)
         {
-            return _context.TouristRoutePictures.Where(p => p.Id ==pictureId).FirstOrDefault();
+            return await _context.TouristRoutePictures.Where(p => p.Id ==pictureId).FirstOrDefaultAsync();
         }
-        public IEnumerable<TouristRoute> GetTouristRoutesByIDList(IEnumerable<Guid> ids)
+        public async Task<IEnumerable<TouristRoute>> GetTouristRoutesByIDListAsync(IEnumerable<Guid> ids)
         {
-            return _context.TouristRoutes.Where(t => ids.Contains(t.Id)).ToList();
+            return await _context.TouristRoutes.Where(t => ids.Contains(t.Id)).ToArrayAsync();
         }
         public void AddTouristRoute(TouristRoute touristRoute)
         {
@@ -114,9 +114,23 @@ namespace Tourist.API.Services
         {
             _context.TouristRoutePictures.Remove(touristRoutePicture);
         }
-        public bool Save()
+
+        public async Task<ShoppingCart> GetShoppingCartByUserId(string userId)
         {
-            return (_context.SaveChanges() >=0);
+            return await _context.ShoppingCarts
+                .Include(s => s.User) //shopping cart表 與 user表 連接
+                .Include(s => s.ShoppingCartItems) //shopping car表 與 lineItem表 連接
+                .ThenInclude(li => li.touristRoute) //獲得旅遊路線的具體數據
+                .Where(s => s.UserId == userId)
+                .FirstOrDefaultAsync();
+        }
+        public async Task CreateShoppingCart(ShoppingCart shoppingCart)
+        {
+            await _context.ShoppingCarts.AddAsync(shoppingCart);
+        }
+        public async Task<bool> SaveAsync()
+        {
+            return (await _context.SaveChangesAsync() >=0);
         }
     }
 }
