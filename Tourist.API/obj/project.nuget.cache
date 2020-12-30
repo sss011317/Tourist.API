@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "UIFnugdRvxEHGcIANa2dDViONdtSYppZrIkbZwS+LnCIzp7AeGrCb+LeumIEaY36xQXIiEDBwB4BsGLXzbV6WA==",
+  "dgSpecHash": "BL0WRZrh8ZZJex+0Pqzs8BKa+V0U/oixzV7RW2sn81cgSYDDIIEWAwYKdn3VXg+SmdeyKpC7ZqCq7hf1UJN/8w==",
   "success": true,
-  "projectFilePath": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
+  "projectFilePath": "C:\\Users\\user-50\\source\\repos\\Tourist.API - 複製\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\user-50\\.nuget\\packages\\automapper\\9.0.0\\automapper.9.0.0.nupkg.sha512",
     "C:\\Users\\user-50\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\7.0.0\\automapper.extensions.microsoft.dependencyinjection.7.0.0.nupkg.sha512",

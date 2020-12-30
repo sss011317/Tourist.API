@@ -27,6 +27,11 @@ namespace Tourist.API.Services
 
         Task<ShoppingCart> GetShoppingCartByUserId(string userId);
         Task CreateShoppingCart(ShoppingCart shoppingCart);
+        Task AddShoppingCartItem(LineItem lineItem);
+        Task<LineItem> GetShoppingCartItemByItemId(int lineItemId);
+        void DeleteShoppingCartItem(LineItem lineItem);
+        Task<IEnumerable<LineItem>> GetshoppingCartsByIdListAsync(IEnumerable<int> ids);
+        void DeleteShoppingCartItems(IEnumerable<LineItem> lineItems);
         Task<bool> SaveAsync();
     }
 }

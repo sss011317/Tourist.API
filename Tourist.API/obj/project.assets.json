@@ -5651,11 +5651,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
+      "projectUniqueName": "C:\\Users\\user-50\\source\\repos\\Tourist.API - 複製\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
       "projectName": "Tourist.API",
-      "projectPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
+      "projectPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API - 複製\\Tourist.API\\Tourist.API\\Tourist.API.csproj",
       "packagesPath": "C:\\Users\\user-50\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API\\Tourist.API\\obj\\",
+      "outputPath": "C:\\Users\\user-50\\source\\repos\\Tourist.API - 複製\\Tourist.API\\Tourist.API\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\user-50\\AppData\\Roaming\\NuGet\\NuGet.Config",

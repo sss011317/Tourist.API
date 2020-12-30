@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Tourist.API.Dtos;
+using Tourist.API.Helper;
+using Tourist.API.Models;
 using Tourist.API.Services;
 
 namespace Tourist.API.Controllers
@@ -31,7 +34,7 @@ namespace Tourist.API.Controllers
         }
 
         [HttpGet]
-        [Authorize(AuthenticationSchemes ="Bearer")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetShoppingCart()
         {
             //1.獲得當前用戶
@@ -42,6 +45,69 @@ namespace Tourist.API.Controllers
             var shoppingCart = await _touristRouteRepository.GetShoppingCartByUserId(userId);
 
             return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
+        }
+        [HttpPost("items")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> AddShoppingCartItem(
+            [FromBody] AddShoppingCartDto addShoppingCartDto
+            )
+        {
+            //1.獲得當前用戶
+            var userId = _httpContextAccessor
+                .HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            //2.使用userId獲得購物車
+            var shoppingCart = await _touristRouteRepository.GetShoppingCartByUserId(userId);
+            //3.創建lineItem
+            var touristRoute = await _touristRouteRepository.GetTouristRouteAsync(addShoppingCartDto.TouristRouteId);
+            if (touristRoute == null)
+            {
+                return NotFound("旅遊路線不存在");
+            }
+            var lineItem = new LineItem()
+            {
+                TouristRouteId = addShoppingCartDto.TouristRouteId,
+                ShoppingCartId = shoppingCart.Id,
+                OriginalPrice = touristRoute.OriginalPrice,
+                DiscountPresent = touristRoute.DiscountPresent
+            };
+
+            //4.添加lineItem並保存資料庫
+            await _touristRouteRepository.AddShoppingCartItem(lineItem);
+            await _touristRouteRepository.SaveAsync();
+            return Ok(_mapper.Map<ShoppingCartDto>(shoppingCart));
+        }
+        [HttpDelete("items/{itemId}")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteShoppingCartItem(
+            [FromRoute] int itemId
+            )
+        {
+            //1.獲取lineitem數據
+            var lineItem = await _touristRouteRepository.GetShoppingCartItemByItemId(itemId);
+            if (lineItem == null)
+            {
+                return NotFound("購物車找不到該商品");
+            }
+            _touristRouteRepository.DeleteShoppingCartItem(lineItem);
+            await _touristRouteRepository.SaveAsync();
+            return NoContent();
+        }
+        [HttpDelete("items/({itemIds})")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> DeleteShoppingCartItems(
+            [ModelBinder(BinderType =typeof(ArrayModelBinder))]
+            [FromRoute] IEnumerable<int> itemIds
+            )
+        {
+            var lineItems = await _touristRouteRepository.GetshoppingCartsByIdListAsync(itemIds);
+            if (lineItems == null)
+            {
+                return NotFound("購物車找不到該商品");
+            }
+            _touristRouteRepository.DeleteShoppingCartItems(lineItems);
+            await _touristRouteRepository.SaveAsync();
+            return NoContent();
         }
     }
 }
