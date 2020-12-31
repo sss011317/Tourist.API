@@ -279,3 +279,4 @@ C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\obj\Debug\netc
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\obj\Debug\netcoreapp3.1\Tourist.API.csproj.CopyComplete
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\obj\Debug\netcoreapp3.1\Tourist.API.genruntimeconfig.cache
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Stateless.dll
+C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll

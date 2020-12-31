@@ -24,6 +24,7 @@ namespace Tourist.API.Controllers
     {
         private readonly ITouristRouteRepository _touristRouteRepository;
         private readonly IUrlHelper _urlHelper;
+        private readonly IPropertyMappingService _propertyMappingService;
         //透過構建函數注入數據倉庫服務
         private readonly IMapper _mapper;
         public TouristRoutesController(
@@ -31,7 +32,8 @@ namespace Tourist.API.Controllers
             IMapper mapper,
             //IUrlHelperFactory,IActionContextAccessor都是為了urlHelper
             IUrlHelperFactory urlHelperFactory,
-            IActionContextAccessor actionContextAccessor
+            IActionContextAccessor actionContextAccessor,
+            IPropertyMappingService propertyMappingService
             )
         {
             //在構建函數的參數中 通過傳入旅遊倉庫的街口 來注入 旅遊倉庫的實例
@@ -39,6 +41,7 @@ namespace Tourist.API.Controllers
             _touristRouteRepository = touristRouteRepository;
             _mapper = mapper;
             _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
+            _propertyMappingService = propertyMappingService;
         }
         private string GeneratieTouristRouteResourceURL(
             TouristRouteResourceParamaters paramaters,
@@ -52,6 +55,7 @@ namespace Tourist.API.Controllers
                 ResourceUrlType.PreviousPage => _urlHelper.Link("GetTouristRoutes",
                     new
                     {
+                        orderBy = paramaters.OrderBy,
                         keyword = paramaters.Keyword,
                         rating = paramaters.Rating,
                         pageNumber = paramaters2.PageNumber - 1,
@@ -60,6 +64,7 @@ namespace Tourist.API.Controllers
                 ResourceUrlType.NextPage => _urlHelper.Link("GetTouristRoutes",
                     new
                     {
+                        orderBy = paramaters.OrderBy,
                         keyword = paramaters.Keyword,
                         rating = paramaters.Rating,
                         pageNumber = paramaters2.PageNumber + 1,
@@ -86,6 +91,14 @@ namespace Tourist.API.Controllers
             //string rating //小於lessThan,大於largerThan,等於 equalTo lessThan3, largerThan2,equalTo5
             ) // FromQuery(負責接收YRL的參數) vs FromBody(負責接收請求主體)
         {
+            //如果字串不合法，不可排序的話 返回badrequest
+            if(!_propertyMappingService
+                .IsMappingExists<TouristRouteDto,TouristRoute>
+                (paramaters.OrderBy))
+            {
+                return BadRequest("請輸入正確的排序參數");
+            }
+
             var touristRoutesFromRepo = await _touristRouteRepository
                 .GetTouristRoutesAsync(
                 paramaters.Keyword, 

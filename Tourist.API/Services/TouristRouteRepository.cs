@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tourist.API.Database;
+using Tourist.API.Dtos;
 using Tourist.API.Helper;
 using Tourist.API.Models;
 
@@ -12,10 +13,14 @@ namespace Tourist.API.Services
     public class TouristRouteRepository : ITouristRouteRepository
     {
         private readonly AppDbContext _context;
+        private readonly IPropertyMappingService _propertyMappingService;
 
-        public TouristRouteRepository(AppDbContext context)
+        public TouristRouteRepository(
+            AppDbContext context,
+            IPropertyMappingService propertyMappingService)
         {
             _context = context;
+            _propertyMappingService = propertyMappingService;
         }
 
         public async Task<TouristRoute> GetTouristRouteAsync(Guid touristRouteId)
@@ -46,11 +51,16 @@ namespace Tourist.API.Services
             }
             if (!string.IsNullOrWhiteSpace(orderBy))
             {
-                if(orderBy.ToLowerInvariant() == "originalprice")
-                {
-                    result = result.OrderBy(t => t.OriginalPrice);
-                }
+                //if(orderBy.ToLowerInvariant() == "originalprice")
+                //{
+                //    result = result.OrderBy(t => t.OriginalPrice);
+                //}
+                var touristRouteMappingDictionary = _propertyMappingService
+                        .GetPropertyMapping<TouristRouteDto, TouristRoute>();
+               result= result.ApplySort(orderBy, touristRouteMappingDictionary);
             }
+
+
             if (ratingValue >= 0)
             {
                 switch (ratingOperator)
