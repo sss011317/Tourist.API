@@ -8,6 +8,7 @@ namespace Tourist.API.ResourceParameters
 {
     public class TouristRouteResourceParamaters
     {
+        public string OrderBy { get; set; }
         public string Keyword { get; set; }
         public string RatingOperator { get; set; } //比較運算的類型，用來儲存運算類型的字串
         public int? RatingValue { get; set; }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Tourist.API.Database;
+using Tourist.API.Helper;
 using Tourist.API.Models;
 
 namespace Tourist.API.Services
@@ -22,10 +23,14 @@ namespace Tourist.API.Services
             return await _context.TouristRoutes.Include(t => t.TouristRoutePictures).FirstOrDefaultAsync(n => n.Id == touristRouteId);
         }
 
-        public async Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(
+        public async Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
             string keyword, 
             string ratingOperator, 
-            int? ratingValue)
+            int? ratingValue,
+            int pageNumber,
+            int pageSize,
+            string orderBy
+            )
         {
             //IQueryable 實際上是c# LINQ to SQL 語句的返回類型 簡單來說 IQueryable可以疊加處理LINQ語句，最後統一訪問資料庫，處理過程也較延遲執行
             //每次進行資料庫操作實際上都是1次IO操作，而系統中的IO操作開銷是最大也是最浪費時間
@@ -38,6 +43,13 @@ namespace Tourist.API.Services
             {
                 keyword = keyword.Trim();
                 result = result.Where(t => t.Title.Contains(keyword));
+            }
+            if (!string.IsNullOrWhiteSpace(orderBy))
+            {
+                if(orderBy.ToLowerInvariant() == "originalprice")
+                {
+                    result = result.OrderBy(t => t.OriginalPrice);
+                }
             }
             if (ratingValue >= 0)
             {
@@ -54,11 +66,12 @@ namespace Tourist.API.Services
                         break;
                 }
             }
+
             //include函數為entityFramework中連接兩張表的方法 表示兩張表通過外部進行連接
             //join函數為不通過外界而是手動表連接的屬性
             //通過上述兩種方法可以進行立即加載(Eager Load)
             //另外entityFramework也提供另一種加載方式延遲加載(Lazy Load)，也就是不用join或include進行表連接
-            return await result.ToArrayAsync();
+            return await PaginationList<TouristRoute>.CreateAsync(pageNumber,pageSize,result);
             //ToList為IQueryable內建函數，通過調用此函數，就會執行資料庫的訪問，而查詢出來的數據類型則不是IQueryable而是<TouristRoute>類型
         }
 
@@ -152,6 +165,24 @@ namespace Tourist.API.Services
         public void DeleteShoppingCartItems(IEnumerable<LineItem> lineItems)
         {
             _context.LineItems.RemoveRange(lineItems);
+        }
+        public async Task AddOrderAsync(Order order)
+        {
+             await _context.AddAsync(order);
+        }
+        public async Task<PaginationList<Order>> GetOrdersByUserId(string userId, int pageNumber, int pageSize)
+        {
+            IQueryable<Order> result = _context.Orders.Where(o => o.UserId == userId);
+            return await PaginationList<Order>.CreateAsync(pageNumber,pageSize,result);
+            //return await _context.Orders.Where(o => o.UserId == userId).ToListAsync();
+        }
+        public async Task<Order> GetOrderById(Guid orderId)
+        {
+            return await _context.Orders
+                .Include(o => o.OrderItems)//獲得訂單內產品列表
+                .ThenInclude(oi => oi.touristRoute) //在獲得產品列表的基礎上，進一步連結旅遊路線table獲取旅遊路線具體資料
+                .Where(o => o.Id == orderId)//最後過濾數據
+                .FirstOrDefaultAsync();
         }
         public async Task<bool> SaveAsync()
         {

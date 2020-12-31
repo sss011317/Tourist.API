@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Tourist.API.Helper;
 using Tourist.API.Models;
 namespace Tourist.API.Services
 {
     public interface ITouristRouteRepository
     {
         //返回一組的touristRoute
-        Task<IEnumerable<TouristRoute>> GetTouristRoutesAsync(string keyword,string ratingOperator,int? ratingValue);
+        Task<PaginationList<TouristRoute>> GetTouristRoutesAsync(
+            string keyword,string ratingOperator,int? ratingValue,
+            int pageNumber , int pageSize,string orderBy);
         //返回一個的touristRoute
         Task<TouristRoute> GetTouristRouteAsync(Guid touristRouteId);
 
@@ -32,6 +35,9 @@ namespace Tourist.API.Services
         void DeleteShoppingCartItem(LineItem lineItem);
         Task<IEnumerable<LineItem>> GetshoppingCartsByIdListAsync(IEnumerable<int> ids);
         void DeleteShoppingCartItems(IEnumerable<LineItem> lineItems);
+        Task AddOrderAsync(Order order);
+        Task<PaginationList<Order>> GetOrdersByUserId(string userId, int pageNumber,int pageSize);
+        Task<Order> GetOrderById(Guid orderId);
         Task<bool> SaveAsync();
     }
 }

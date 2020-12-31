@@ -12,6 +12,9 @@ using Tourist.API.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Tourist.API.Helper;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.AccessControl;
+using Microsoft.AspNetCore.Mvc.Routing;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Tourist.API.Controllers
 {
@@ -20,27 +23,78 @@ namespace Tourist.API.Controllers
     public class TouristRoutesController : ControllerBase
     {
         private readonly ITouristRouteRepository _touristRouteRepository;
+        private readonly IUrlHelper _urlHelper;
         //透過構建函數注入數據倉庫服務
         private readonly IMapper _mapper;
         public TouristRoutesController(
             ITouristRouteRepository touristRouteRepository,
-            IMapper mapper
+            IMapper mapper,
+            //IUrlHelperFactory,IActionContextAccessor都是為了urlHelper
+            IUrlHelperFactory urlHelperFactory,
+            IActionContextAccessor actionContextAccessor
             )
         {
             //在構建函數的參數中 通過傳入旅遊倉庫的街口 來注入 旅遊倉庫的實例
             //最後在構建函數中 給私有倉庫賦值
             _touristRouteRepository = touristRouteRepository;
             _mapper = mapper;
+            _urlHelper = urlHelperFactory.GetUrlHelper(actionContextAccessor.ActionContext);
         }
-        // api/touristRoutes?keyword=傳入的參數
-        [HttpGet, HttpHead]
+        private string GeneratieTouristRouteResourceURL(
+            TouristRouteResourceParamaters paramaters,
+            PaginationResourceParamaters paramaters2,
+            ResourceUrlType type
+            )
+        {
+            return type switch
+            {
+                //asp.net中urlhelp專門管理url，urlHelp裡面有個函數link來生成絕對路徑，而名稱就是在action 函數中http內定義的字串
+                ResourceUrlType.PreviousPage => _urlHelper.Link("GetTouristRoutes",
+                    new
+                    {
+                        keyword = paramaters.Keyword,
+                        rating = paramaters.Rating,
+                        pageNumber = paramaters2.PageNumber - 1,
+                        pageSize = paramaters2.PageSize
+                    }),
+                ResourceUrlType.NextPage => _urlHelper.Link("GetTouristRoutes",
+                    new
+                    {
+                        keyword = paramaters.Keyword,
+                        rating = paramaters.Rating,
+                        pageNumber = paramaters2.PageNumber + 1,
+                        pageSize = paramaters2.PageSize
+                    }),
+                _ => _urlHelper.Link("GetTouristRoutes",
+                    new
+                    {
+                        keyword = paramaters.Keyword,
+                        rating = paramaters.Rating,
+                        pageNumber = paramaters2.PageNumber,
+                        pageSize = paramaters2.PageSize
+                    })
+            };
+        }
+
+        // api/touristRoutes?keyword=傳入的參數(from query用法)
+        [HttpGet(Name = "GetTouristRoutes")]
+        [HttpHead]
         public async Task<IActionResult> GetTouristRoutes(
-            [FromQuery] TouristRouteResourceParamaters paramaters
+            [FromQuery] TouristRouteResourceParamaters paramaters,
+            [FromQuery] PaginationResourceParamaters paramaters2 //分頁參數處理器
             //[FromQuery] string keyword,
             //string rating //小於lessThan,大於largerThan,等於 equalTo lessThan3, largerThan2,equalTo5
             ) // FromQuery(負責接收YRL的參數) vs FromBody(負責接收請求主體)
         {
-            var touristRoutesFromRepo = await _touristRouteRepository.GetTouristRoutesAsync(paramaters.Keyword, paramaters.RatingOperator, paramaters.RatingValue);
+            var touristRoutesFromRepo = await _touristRouteRepository
+                .GetTouristRoutesAsync(
+                paramaters.Keyword, 
+                paramaters.RatingOperator, 
+                paramaters.RatingValue,
+                paramaters2.PageNumber,
+                paramaters2.PageSize,
+                paramaters.OrderBy
+                );
             if (touristRoutesFromRepo == null || touristRoutesFromRepo.Count() <= 0)
             {
                 return NotFound("沒有旅遊路線");
@@ -48,9 +102,33 @@ namespace Tourist.API.Controllers
 
             //MAP支持列表映射，所以使用IEnumerable，而類型就是TouristRouteDto，最後加上數據源touristRoutesFromRepo
             var touristRoutesDto = _mapper.Map<IEnumerable<TouristRouteDto>>(touristRoutesFromRepo);
+
+            var previousPageLink = touristRoutesFromRepo.HasPrevious    //判斷touristRoutesFromRepo是否存在上一頁
+                ? GeneratieTouristRouteResourceURL(   //如果存在使用GeneratieTouristRouteResourceURL生成器來創建字串
+                    paramaters, paramaters2, ResourceUrlType.PreviousPage) //三個參數 資料過濾,分頁參數,以及URL類型
+                : null; //如果不存在上一頁的資料 previousPageLink 就為null
+
+            var nextPageLink = touristRoutesFromRepo.HasNext
+               ? GeneratieTouristRouteResourceURL(
+                   paramaters, paramaters2, ResourceUrlType.NextPage)
+               : null;
+            //在頭部創建訊息 x-pagination
+            var paginationMetadata = new
+            {
+                previousPageLink,
+                nextPageLink,
+                totalCount = touristRoutesFromRepo.TotalCount,
+                pageSize = touristRoutesFromRepo.PageSize,
+                currentPage = touristRoutesFromRepo.CurrentPage,
+                totalPages = touristRoutesFromRepo.TotalPages
+            };
+            Response.Headers.Add("x-pagination",
+                Newtonsoft.Json.JsonConvert.SerializeObject(paginationMetadata));
+
             return Ok(touristRoutesDto);
         }
-
+        
+        
 
         //使用RESTful思想設計一個單一資源，最佳的實踐方式是在URL中使用名詞狀態的複數型，緊接著協槓ID.
 

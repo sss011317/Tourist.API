@@ -109,5 +109,34 @@ namespace Tourist.API.Controllers
             await _touristRouteRepository.SaveAsync();
             return NoContent();
         }
+        [HttpPost("checkout")]
+        [Authorize(AuthenticationSchemes = "Bearer")]
+        public async Task<IActionResult> Checkout()
+        {
+            //1.獲得當前用戶
+            var userId = _httpContextAccessor
+                .HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+
+            //2.使用userId獲得購物車
+            var shoppingCart = await _touristRouteRepository.GetShoppingCartByUserId(userId);
+
+            //3.創建訂單
+            var order = new Order()
+            {
+                Id = Guid.NewGuid(),
+                UserId = userId,
+                State = OrderStateEnum.Pending,
+                OrderItems = shoppingCart.ShoppingCartItems,
+                CreateDateUTC = DateTime.UtcNow
+            };
+
+            shoppingCart.ShoppingCartItems = null;
+            //4.保存數據
+            await _touristRouteRepository.AddOrderAsync(order);
+            await _touristRouteRepository.SaveAsync();
+            //5.return
+            return Ok(_mapper.Map<OrderDto>(order));
+        }
     }
+
 }

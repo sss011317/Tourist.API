@@ -20,6 +20,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Tourist.API.Models;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace Tourist.API
 {
@@ -101,6 +102,10 @@ namespace Tourist.API
             });
             //AutoMapper服務依賴注入機制: AutoMapper會自動掃描程式碼裡所有包含映射關係的profile文件加載到AppDomain.CurrentDomain.GetAssemblies()
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            services.AddHttpClient();
+            //為使用URLHELP
+            services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

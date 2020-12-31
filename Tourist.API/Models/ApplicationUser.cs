@@ -9,8 +9,8 @@ namespace Tourist.API.Models
     public class ApplicationUser : IdentityUser
     {
         public string Address { get; set; }
-        public ShoppingCart shoppingCart { get; set; }
-        //Orders
+        public ShoppingCart ShoppingCart { get; set; }
+        public ICollection<Order> Orders { get; set; }
         //綁定4張表的對應關係，使用virtual重載4張表，從程式碼的角度建立模型關係
         //UserRoles用戶角色
         public virtual ICollection<IdentityUserRole<string>> UserRoles { get; set; }
