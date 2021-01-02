@@ -32,6 +32,9 @@ namespace Tourist.API.ResourceParameters
                     //Value 為 Rating內建的變數，負責接收外部的數據
                 }
 
-            } }
+            } 
+        }
+
+        public string Fields { get; set; }
     }
 }

@@ -29,7 +29,7 @@ namespace Tourist.API.Controllers
                 throw new ArgumentException(nameof(mapper));
         }
 
-        [HttpGet]
+        [HttpGet(Name = "GetPictureListForTouristRotue")]
         public async Task<IActionResult> GetPictureListForTouristRotue(Guid touristRouteId)
         {
             if (!( await _touristRouteRepository.TouristRouteExistsAsync(touristRouteId)))
@@ -60,10 +60,10 @@ namespace Tourist.API.Controllers
             }
             return Ok(_mapper.Map<TouristRoutePictureDto>(pictureFromRepo));
         }
-        [HttpPost]
+        [HttpPost(Name = "CreateTouristRoutePicture")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreatTouristRoutePicture(
+        public async Task<IActionResult> CreateTouristRoutePicture(
             [FromRoute]Guid touristRouteId,
             [FromBody] TouristRoutePictureForCreationDto touristRoutePictureForCreationDto)
         {

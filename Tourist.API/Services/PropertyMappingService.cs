@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Tourist.API.Dtos;
 using Tourist.API.Models;
@@ -67,6 +68,28 @@ namespace Tourist.API.Services
                     trimmedField : trimmedField.Remove(indexOfFirstSpace);
 
                 if (!propertyMapping.ContainsKey(propertuName))
+                {
+                    return false;
+                }
+            }
+            return true;
+
+        }
+        public bool IsPropertiesExists<T>(string fields)
+        {
+            if (string.IsNullOrWhiteSpace(fields)) return true;
+            
+            var fieldAfterSplit = fields.Split(',');
+            foreach(var field in fieldAfterSplit)
+            {
+                var propertyName = field.Trim();
+                var propertyInfo = typeof(T)
+                    .GetProperty(propertyName,
+                    BindingFlags.IgnoreCase 
+                    | BindingFlags.Public 
+                    | BindingFlags.Instance);
+                //如果在泛型T中沒有找到對應的屬性
+                if(propertyInfo == null)
                 {
                     return false;
                 }

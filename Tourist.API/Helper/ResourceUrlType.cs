@@ -8,6 +8,7 @@ namespace Tourist.API.Helper
     public enum ResourceUrlType
     {
         PreviousPage,
-        NextPage
+        NextPage,
+        CurrentPage
     }
 }

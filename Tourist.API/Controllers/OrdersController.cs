@@ -37,7 +37,7 @@ namespace Tourist.API.Controllers
             _mapper = mapper;
             _httpClientFactory = httpClientFactory;
         }
-        [HttpGet]
+        [HttpGet(Name = "GetOrders")]
         [Authorize(AuthenticationSchemes = "Bearer")]
         public async Task<IActionResult> GetOrders(
             [FromQuery] PaginationResourceParamaters paramaters //分頁參數處理器

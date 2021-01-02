@@ -111,6 +111,17 @@ namespace Tourist.API
             services.AddSingleton<IActionContextAccessor, ActionContextAccessor>();
             //通過注入PropertyMappingService的依賴，可以在倉庫中得到映射字典 _mappingDictionary
             services.AddTransient<IPropertyMappingService, PropertyMappingService>();
+            //配置自定義媒體類型
+            services.Configure<MvcOptions>(config => {  //配置MVCoption
+                //輸出格式處理器實例，處理媒體類型
+                var outputFormatter = config.OutputFormatters  //OutputFormatters是一個列表，所有的媒體類型處理器都會放在其中
+                .OfType<NewtonsoftJsonOutputFormatter>()?.FirstOrDefault();
+            if(outputFormatter != null)
+                {
+                    outputFormatter.SupportedMediaTypes
+                    .Add("application/vnd.tourist.hateoas+json");
+                }
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

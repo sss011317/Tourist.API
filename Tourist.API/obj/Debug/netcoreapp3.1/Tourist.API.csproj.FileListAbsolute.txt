@@ -280,3 +280,17 @@ C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\obj\Debug\netc
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\obj\Debug\netcoreapp3.1\Tourist.API.genruntimeconfig.cache
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Stateless.dll
 C:\Users\user-50\source\repos\Tourist.API\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Authentication.JwtBearer.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.Internal.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Core.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Identity.Stores.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.JsonWebTokens.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Logging.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Microsoft.IdentityModel.Tokens.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\Stateless.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\System.IdentityModel.Tokens.Jwt.dll
+C:\Users\test\source\repos\Tourist.API\Tourist.API\bin\Debug\netcoreapp3.1\System.Linq.Dynamic.Core.dll
